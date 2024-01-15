@@ -13,6 +13,9 @@
 #include "mamba/util/path_manip.hpp"
 #include "mamba/util/string.hpp"
 
+// dr4292
+#include "mamba/core/environments_manager.hpp"
+
 
 extern "C"
 {
@@ -93,6 +96,8 @@ namespace mamba
             assert(&ctx == &config.context());
             std::vector<std::tuple<std::string, nlohmann::json>> items;
 
+            EnvironmentsManager env_manager{ ctx };
+
             items.push_back({ "libmamba version", version() });
 
             if (ctx.command_params.is_micromamba && !ctx.command_params.caller_version.empty())
@@ -100,10 +105,25 @@ namespace mamba
                 items.push_back({ "micromamba version", ctx.command_params.caller_version });
             }
 
+            // For nb_conda_kernels
+            items.push_back({ "conda_prefix", ctx.prefix_params.root_prefix.string() });
             items.push_back({ "curl version", curl_version() });
             items.push_back({ "libarchive version", archive_version_details() });
 
+            // For nb_conda_kernels - lifted from micromamba/src/env
+            const auto pfxs = env_manager.list_all_known_prefixes();
+            std::vector<std::string> envs(pfxs.size());
+            std::transform(
+                    pfxs.begin(),
+                    pfxs.end(),
+                    envs.begin(),
+                    [](const mamba::fs::u8path& path) { return path.string(); }
+                );
+            items.push_back({ "envs", envs });
+
             items.push_back({ "envs directories", ctx.envs_dirs });
+            // For nb_conda_kernels
+            items.push_back({ "envs_dirs", ctx.envs_dirs });
             items.push_back({ "package cache", ctx.pkgs_dirs });
 
             std::string name, location;

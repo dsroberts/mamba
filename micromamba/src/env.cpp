@@ -35,7 +35,8 @@ get_env_name(const Context& ctx, const mamba::fs::u8path& px)
     }
     else if (util::starts_with(px.string(), ed.string()))
     {
-        return mamba::fs::relative(px, ed).string();
+        //return mamba::fs::relative(px, ed).string();
+        return px.lexically_relative(ed).string();
     }
     else
     {
