@@ -1,0 +1,35 @@
+name: Build custom micromamba
+
+on:
+  push:
+    branches:
+      - nb_conda_kernels_compat
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Create build environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: dev/environment-micromamba-static.yml
+          init-shell: bash
+          post-cleanup: all
+      - name: Generate build files
+        run: cmake -B build/ -G Ninja ${CMAKE_ARGS} -D CMAKE_BUILD_TYPE="Release" -D BUILD_LIBMAMBA=ON -D BUILD_STATIC=ON -D BUILD_MICROMAMBA=ON
+        shell: micromamba-shell {0}
+      - name: Build micromamba
+        run: cmake --build build/ --parallel
+        shell: micromamba-shell {0}
+      - name: Create artefact
+        run: |
+            mkdir bin deploy
+            mv build/micromamba/micromamba bin
+            tar -cjf deploy/latest bin
+      - name: Upload to github pages
+        uses: peaceris/actions-gh-pages
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
