@@ -22,7 +22,9 @@ jobs:
         run: cmake -B build/ -G Ninja ${CMAKE_ARGS} -D CMAKE_BUILD_TYPE="Release" -D BUILD_LIBMAMBA=ON -D BUILD_STATIC=ON -D BUILD_MICROMAMBA=ON
         shell: micromamba-shell {0}
       - name: Build micromamba
-        run: cmake --build build/ --parallel
+        run: |
+            cmake --build build/ --parallel
+            strip build/micromamba/micromamba
         shell: micromamba-shell {0}
       - name: Create artefact
         run: |
