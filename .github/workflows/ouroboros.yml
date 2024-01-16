@@ -29,7 +29,7 @@ jobs:
             mv build/micromamba/micromamba bin
             tar -cjf deploy/latest bin
       - name: Upload to github pages
-        uses: peaceris/actions-gh-pages
+        uses: peaceris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./deploy
