@@ -15,7 +15,7 @@ jobs:
         uses: mamba-org/setup-micromamba@v1
         with:
           environment-file: dev/environment-micromamba-static.yml
-          environmane-name: build-env
+          environment-name: build-env
           init-shell: bash
           post-cleanup: all
       - name: Generate build files
