@@ -31,9 +31,9 @@ jobs:
             mkdir bin
             cat<<EOF > bin/activate
             #!/bin/sh
-            _CONDA_ROOT=\$( realpath \$CONDA_EXE/.. )
+            _CONDA_ROOT=\$( realpath \${CONDA_EXE%/*}/.. )
             eval \$( "\$_CONDA_ROOT/bin/micromamba" shell hook --shell bash )
-            micromamba activate "$@"
+            micromamba activate "\$@"
             EOF
             chmod +x bin/activate
       - name: Create artefact
