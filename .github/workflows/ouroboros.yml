@@ -26,9 +26,19 @@ jobs:
             cmake --build build/ --parallel
             strip build/micromamba/micromamba
         shell: micromamba-shell {0}
+      - name: Create activate script
+        run: |
+            mkdir bin
+            cat<<EOF > bin/activate
+            #!/bin/sh
+            _CONDA_ROOT=\$( realpath \$CONDA_EXE/.. )
+            eval \$( "\$_CONDA_ROOT/bin/micromamba" shell hook --shell bash )
+            micromamba activate "$@"
+            EOF
+            chmod +x bin/activate
       - name: Create artefact
         run: |
-            mkdir bin deploy
+            mkdir deploy
             mv build/micromamba/micromamba bin
             tar -cjf deploy/latest bin
       - name: Upload to github pages
